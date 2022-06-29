@@ -1,13 +1,11 @@
 package com.book.bookpricing.controller;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.book.bookpricing.entity.Book;
 import com.book.bookpricing.exception.BookNotFoundException;
-import com.book.bookpricing.exception.ErrorMessage;
 import com.book.bookpricing.repository.BookRepository;
 import com.book.bookpricing.service.BookServiceImpl;
 
@@ -37,14 +34,14 @@ public class BookController {
 	}
 
 	@PostMapping("/addbook")
-	public Book createbook(@RequestBody Book book) {
-		return bookservice.addBook(book);
+	public ResponseEntity<Book> createbook(@RequestBody Book book) {
+		return new ResponseEntity<Book>(bookservice.addBook(book),HttpStatus.OK);
 	}
 
 	// Using path variable, put url like this in postman: ../getbook/1
 	@GetMapping("/getbook/{id}")
-	public Book findBookById(@PathVariable("id") Integer bookNumber) throws BookNotFoundException {
-		return bookservice.findById(bookNumber);
+	public ResponseEntity<Book> findBookById(@PathVariable("id") Integer bookNumber) throws BookNotFoundException {
+		return new ResponseEntity<Book>(bookservice.findById(bookNumber),HttpStatus.OK);
 	}
 
 	// Using request param, put url like this in postman: ..//deletebook?id=1 (just enter key & value)
@@ -55,8 +52,9 @@ public class BookController {
 	}
 
 	@GetMapping("/viewbyprice")
-	public Iterable<Book> viewByPrice(@RequestParam("id") Double price) {
-		return bookrepository.findBookByPrice(price);
+	public List<Book> viewByPrice(@RequestParam("id") Double price) {
+		List<Book> books= bookrepository.findBookByPrice(price);
+		return books;
 	}
 
 	@PutMapping("/updatebook")
